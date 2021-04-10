@@ -9,6 +9,7 @@ const superagent = require('superagent');
 const server = express();
 
 const PORT = process.env.PORT || 3000;
+// const client = new pg.Client({ connectionString: process.env.DATABASE_URL,   ssl: { rejectUnauthorized: false } });
 server.use(cors());
 
 
@@ -38,6 +39,14 @@ function locationhandler(req, res) {
     let key = process.env.LOCATION_KEY;
     console.log(req.query,'rrrr');
     let city = req.query.city;
+    let sq = locationData.search_query;
+              let fq = locationData.formatted_query;
+              let lat = locationData.latitude;
+              let lon = locationData.longitude;
+              let SQLarray = [sq, fq, lat, lon];
+    client.query(SQL, [city])
+    let SQL = 'SELECT search_query, formatted_query, latitude, longitude FROM cities WHERE search_query=$1;';
+    client.query(SQL, SQLarray);
     let url = `https://us1.locationiq.com/v1/search.php?key=${key}&q=${city}&format=json`;
     superagent.get(url)
     .then(locationData=>{
